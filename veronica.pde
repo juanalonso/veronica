@@ -4,12 +4,12 @@ import ddf.minim.analysis.*;
 import ddf.minim.*;
 
 Minim minim;
-AudioInput in;
+AudioPlayer barbiephonic;
 FFT fft;
 
 float fCurrentMax = -1000;
 float fMax;
-float fMemory = 0.6;
+float fMemory = 0.2;
 float noiseOffset = 0.0;
 
 int eyeRadius = 150;
@@ -22,8 +22,10 @@ int mouthYPos = 650;
 void setup() {
 
   minim = new Minim(this);
-  in = minim.getLineIn(Minim.MONO, 1024);
-  fft = new FFT(in.bufferSize(), in.sampleRate());
+  barbiephonic = minim.loadFile("Barbiephonic - Blarg.wav", 1024);
+  barbiephonic.loop();
+  
+  fft = new FFT(barbiephonic.bufferSize(), barbiephonic.sampleRate());
   fft.window(FFT.HAMMING);
 
   size(800, 900); 
@@ -36,7 +38,7 @@ void setup() {
 
 void draw() {
 
-  fft.forward(in.mix);
+  fft.forward(barbiephonic.mix);
 
   int iFreq = 220;
   fMax = 0;  
