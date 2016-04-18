@@ -19,17 +19,20 @@ int eyeYPos = 300;
 int mouthXPos = 225;
 int mouthYPos = 650;
 
+int numFolders = 10;
+int filesPerFolder = 1588;
+int delayBetweenNames = 12;
+int delayBetweenUtterances = 1;
+int repetitions = 5;
+int startTime;
+
 void setup() {
 
   minim = new Minim(this);
-  barbiephonic = minim.loadFile("Barbiephonic - Blarg.wav", 1024);
-  barbiephonic.loop();
-  
-  fft = new FFT(barbiephonic.bufferSize(), barbiephonic.sampleRate());
-  fft.window(FFT.HAMMING);
+
+  startTime = millis();
 
   size(800, 900); 
-
   stroke(0);
   strokeJoin(ROUND);
   fill(255, 255, 255);
@@ -38,6 +41,19 @@ void setup() {
 
 void draw() {
 
+  if (startTime + delayBetweenNames * 1000 < millis()) {
+
+    String randomName = (int)random(numFolders) + "/barbie_"+nf((int)random(filesPerFolder), 5)+".wav";
+    barbiephonic = minim.loadFile(randomName, 1024);
+    barbiephonic.play();
+
+    fft = new FFT(barbiephonic.bufferSize(), barbiephonic.sampleRate());
+    fft.window(FFT.HAMMING);
+
+    startTime = millis();
+  }
+
+if (barbiephonic!=null && barbiephonic.isPlaying()) {
   fft.forward(barbiephonic.mix);
 
   int iFreq = 220;
@@ -50,9 +66,12 @@ void draw() {
 
   fMax = fMax * 11;
   fCurrentMax = fCurrentMax * fMemory + fMax * (1 - fMemory);
+} else {
+  fCurrentMax = 0;
+}
 
   float pupilaOffsetX = -60+noise(noiseOffset)*120.0;
-  float pupilaOffsetY = -10+noise(2+noiseOffset)*20.0;
+  float pupilaOffsetY = -20+noise(2+noiseOffset)*40.0;
 
   if (fCurrentMax > 50) {
     pupilaOffsetX = 0;
