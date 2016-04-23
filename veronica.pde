@@ -12,23 +12,24 @@ public enum States {
 }
 
 //Face parameters
-final int eyeRadius = 150;
-final int eyeXPos = 280;
-final int eyeYPos = 300;
+final int eyeRadiusX = 180;
+final int eyeRadiusY = 140;
+final int eyeXPos = 260;
+final int eyeYPos = 400;
 final int mouthXPos = 225;
 final int mouthYPos = 650;
 
 //Animation parameters
-final float fMemory = 0.2;
+final float fMemory = 0.3;
 
 //Folder parameters
 final int numFolders = 10;
 final int filesPerFolder = 1588;
 
 //Finite-state machine parameters
-int delayBetweenNames = 5000; //in ms
-int delayBetweenUtterances = 1500; //in ms
-int numRepetitions = 4;
+int delayBetweenNames = 50000; //in ms
+int delayBetweenUtterances = 1250; //in ms
+int numRepetitions = 3;
 
 float currFFTMax = 0;
 float FFTMax;
@@ -42,13 +43,12 @@ void setup() {
 
   minim = new Minim(this);
   fft = new FFT(1024, 22050);
-  //fft.window(FFT.HAMMING);
 
   size(800, 900); 
-  stroke(0);
+  background(0);
   strokeJoin(ROUND);
-  fill(255, 255, 255);
   rectMode(CORNERS);
+
 }
 
 void draw() {
@@ -96,30 +96,42 @@ void draw() {
   }
 
   //Eye movement
-  float pupilaOffsetX = -60+noise(noiseOffset)*120.0;
-  float pupilaOffsetY = -20+noise(2+noiseOffset)*40.0;
+  float pupilaOffsetX = (-eyeRadiusX+noise(noiseOffset)*eyeRadiusX*2)*0.45;
+  float pupilaOffsetY = (-eyeRadiusY+noise(2+noiseOffset)*eyeRadiusY*2)*0.45;
 
   if (currFFTMax > 50) {
     pupilaOffsetX = 0;
   } else if (currFFTMax > 10) {
     pupilaOffsetX *= map (currFFTMax, 10, 50, 1, 0);
   }
-  noiseOffset += 0.005;
+  noiseOffset += 0.01;
 
-  //Draw elements
-  background(250, 201, 169);  
+  //Draw face
+  //stroke(200);
 
+  fill(250, 201, 169);
+  rect(0,0,width,700); 
+  //rect(150,0,width-150,900); 
+  //ellipse(150,700,300,300);
+  //ellipse(width-150,700,300,300);
+  ellipse(width/2,700,800,400);
+
+  //Mouth
+  stroke(0);
   strokeWeight(12);
   fill(125, 0, 0);
   rect(mouthXPos+currFFTMax/10, mouthYPos-currFFTMax/7, (width-mouthXPos)-currFFTMax/10, mouthYPos+currFFTMax/7);
 
+  //White part of the eye
+  noStroke();
   fill(255);
-  ellipse(eyeXPos, eyeYPos, eyeRadius, eyeRadius);
-  ellipse(width-eyeXPos, eyeYPos, eyeRadius, eyeRadius);
+  ellipse(eyeXPos, eyeYPos, eyeRadiusX, eyeRadiusY);
+  ellipse(width-eyeXPos, eyeYPos, eyeRadiusX, eyeRadiusY);
 
-  strokeWeight(20);
-  ellipse(eyeXPos+pupilaOffsetX, eyeYPos+pupilaOffsetY, 20, 20);
-  ellipse(width-eyeXPos+pupilaOffsetX, eyeYPos+pupilaOffsetY, 20, 20);
+  //Pupils
+  fill(0);
+  ellipse(eyeXPos+pupilaOffsetX, eyeYPos+pupilaOffsetY, 50, 50);
+  ellipse(width-eyeXPos+pupilaOffsetX, eyeYPos+pupilaOffsetY, 50, 50);
 }
 
 void stop() {
