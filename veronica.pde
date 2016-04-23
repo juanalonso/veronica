@@ -27,7 +27,7 @@ final int numFolders = 10;
 final int filesPerFolder = 1588;
 
 //Finite-state machine parameters
-int delayBetweenNames = 50000; //in ms
+int delayBetweenNames = 10000; //in ms
 int delayBetweenUtterances = 1250; //in ms
 int numRepetitions = 3;
 
@@ -57,7 +57,7 @@ void draw() {
   switch(currState) {
   case WAITING_FOR_DELAY:
     if (startTime + delayBetweenNames < millis()) {
-      String randomName = (int)random(numFolders) + "/barbie_"+nf((int)random(filesPerFolder), 5)+".wav";
+      String randomName = (int)random(numFolders) + "/barbie_"+nf(((int)random(filesPerFolder))+1, 5)+".wav";
       barbiephonic = minim.loadFile(randomName, 1024);
       currState = States.PLAYING_WAV;
       currRepetition = 0;
@@ -99,21 +99,17 @@ void draw() {
   float pupilaOffsetX = (-eyeRadiusX+noise(noiseOffset)*eyeRadiusX*2)*0.45;
   float pupilaOffsetY = (-eyeRadiusY+noise(2+noiseOffset)*eyeRadiusY*2)*0.45;
 
-  if (currFFTMax > 50) {
+  if (currState != States.WAITING_FOR_DELAY) {
     pupilaOffsetX = 0;
-  } else if (currFFTMax > 10) {
-    pupilaOffsetX *= map (currFFTMax, 10, 50, 1, 0);
+    pupilaOffsetY = 0;
   }
+  
   noiseOffset += 0.01;
 
   //Draw face
-  //stroke(200);
 
   fill(250, 201, 169);
   rect(0,0,width,700); 
-  //rect(150,0,width-150,900); 
-  //ellipse(150,700,300,300);
-  //ellipse(width-150,700,300,300);
   ellipse(width/2,700,800,400);
 
   //Mouth
